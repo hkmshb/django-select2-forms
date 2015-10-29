@@ -10,7 +10,17 @@ else:
     get_model = apps.get_model
 from django.forms.models import ModelChoiceIterator
 from django.http import HttpResponse
-from django.utils.encoding import force_unicode
+try:
+    from django.utils.encoding import force_unicode
+except ImportError:
+    from django.utils.encoding import force_str
+    force_unicode = force_str
+    
+try:
+    basestring
+except NameError:
+    unicode = str
+    basestring = str
 
 from .fields import ManyToManyField
 
@@ -116,7 +126,7 @@ class Select2View(object):
     def init_selection(self):
         try:
             field, model_cls = self.get_field_and_model()
-        except ViewException, e:
+        except ViewException as e:
             return self.get_response({'error': unicode(e)}, status=500)
 
         q = self.request.GET.get('q', None)
@@ -129,7 +139,7 @@ class Select2View(object):
             except TypeError:
                 raise InvalidParameter("q parameter must be comma separated "
                                        "list of integers")
-        except InvalidParameter, e:
+        except InvalidParameter as e:
             return self.get_response({'error': unicode(e)}, status=500)
 
         queryset = field.queryset.filter(**{
@@ -161,7 +171,7 @@ class Select2View(object):
     def fetch_items(self):
         try:
             field, model_cls = self.get_field_and_model()
-        except ViewException, e:
+        except ViewException as e:
             return self.get_response({'error': unicode(e)}, status=500)
 
         queryset = copy.deepcopy(field.queryset)
@@ -188,7 +198,7 @@ class Select2View(object):
             else:
                 if page < 1:
                     raise InvalidParameter("Invalid page '%s' passed")
-        except InvalidParameter, e:
+        except InvalidParameter as e:
             return self.get_response({'error': unicode(e)}, status=500)
 
         search_field = field.search_field

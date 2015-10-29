@@ -11,7 +11,12 @@ except ImportError:
     from django.forms.util import flatatt
 from django.utils.datastructures import MultiValueDict, MergeDict
 from django.utils.html import escape, conditional_escape
-from django.utils.encoding import force_unicode
+try:
+    from django.utils.encoding import force_unicode
+except ImportError:
+    from django.utils.encoding import force_str
+    force_unicode = force_str
+    
 from django.utils.safestring import mark_safe
 
 from .utils import combine_css_classes
@@ -57,7 +62,7 @@ class Select(widgets.Input):
         self.ajax = kwargs.pop('ajax', self.ajax)
         self.js_options = {}
         if js_options is not None:
-            for k, v in js_options.iteritems():
+            for k, v in js_options.items():
                 if k in self.js_options_map:
                     k = self.js_options_map[k]
                 self.js_options[k] = v
@@ -89,7 +94,7 @@ class Select(widgets.Input):
         attrs = attrs or {}
         js_options = js_options or {}
 
-        for k, v in dict(self.js_options, **js_options).iteritems():
+        for k, v in dict(self.js_options, **js_options).items():
             if k in self.js_options_map:
                 k = self.js_options_map[k]
             options[k] = v
@@ -106,7 +111,7 @@ class Select(widgets.Input):
                 'dataType': 'jsonp' if is_jsonp else 'json',
                 'quietMillis': quiet_millis,
             }
-            for k, v in ajax_opts.iteritems():
+            for k, v in ajax_opts.items():
                 if k in self.js_options_map:
                     k = self.js_options_map[k]
                 default_ajax_opts[k] = v

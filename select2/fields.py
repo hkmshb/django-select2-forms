@@ -4,9 +4,18 @@ from django.db import models
 from django.core.exceptions import ImproperlyConfigured, ValidationError
 from django.db.models.fields import FieldDoesNotExist
 from django.forms.models import ModelChoiceIterator
-from django.utils.encoding import force_unicode
 from django.db.models.fields.related import add_lazy_relation
-
+try:
+    from django.utils.encoding import force_unicode
+except ImportError:
+    from django.utils.encoding import force_str
+    force_unicode = force_str
+    
+try:
+    basestring
+except NameError:
+    basestring = str
+    
 from .models.descriptors import SortableReverseManyRelatedObjectsDescriptor
 from .widgets import Select, SelectMultiple
 

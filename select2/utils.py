@@ -1,7 +1,11 @@
 import re
+try:
+    basestring
+except NameError:
+    basestring = str
 
 
-re_spaces = re.compile(ur"\s+")
+re_spaces = re.compile(r"\s+")
 
 
 class cached_property(object):
